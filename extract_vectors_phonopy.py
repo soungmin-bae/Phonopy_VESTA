@@ -120,12 +120,22 @@ def write_VESTA(vesta, displacements, qpoint_band, q_position, scale ):
         
         for band in range(nbands) : 
             towrite = vesta.split('VECTR')[0]
-            towrite += 'VECTR\n'
+            towrite += 'VECTR\n
+            max_length=0.0
+            for atom in range(natoms) :
+                a = displacements[qpoint][band][atom][0]
+                b = displacements[qpoint][band][atom][1]
+                c = displacements[qpoint][band][atom][2]
+                length=(a**2+b**2+c**2)**0.5
+                if length > max_length:
+                    max_length = length
+
+            normalization_factor= 1/max_length
             for atom in range(natoms) :  
                 towrite += '%5d' %(atom + 1)
-                towrite += '%10.5f' %(displacements[qpoint][band][atom][0] * int(scale))
-                towrite += '%10.5f' %(displacements[qpoint][band][atom][1] * int(scale))
-                towrite += '%10.5f' %(displacements[qpoint][band][atom][2] * int(scale))
+                towrite += '%10.5f' %(displacements[qpoint][band][atom][0] * int(scale) * normalization_factor)
+                towrite += '%10.5f' %(displacements[qpoint][band][atom][1] * int(scale) * normalization_factor)
+                towrite += '%10.5f' %(displacements[qpoint][band][atom][2] * int(scale) * normalization_factor)
                 towrite += '\n'
                 towrite += '%5d' %(atom + 1)  +  ' 0 0 0 0\n  0 0 0 0 0\n'
             
